@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Resume Builder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>***Dynamic Resume Builder***</h1>
+    <form id="Resume-form">
+        <fieldset>
+            <legend>Personal Information</legend>
+            <label for="name">Name:</label>
+            <input type="text" id="name" placeholder="Enter your name" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" placeholder="Enter your email" required>
+
+            <label for="phone">Phone:</label>
+            <input type="tel" id="phone" placeholder="Enter your phone number" required>
+
+            <!-- Profile Picture Upload -->
+            <label for="profile-picture">Profile Picture (optional):</label>
+            <input type="file" id="profile-picture" accept="image/*">
+        </fieldset>
+
+        <fieldset>
+            <legend>Education</legend>
+            <label for="education">Education:</label>
+            <textarea id="education" placeholder="Enter your education" rows="4" required></textarea>
+        </fieldset>
+
+        <fieldset>
+            <legend>Experience</legend>
+            <label for="experience">Experience:</label>
+            <textarea id="experience" placeholder="Enter your work experience" rows="4" required></textarea>
+        </fieldset>
+
+        <fieldset>
+            <legend>Skills</legend>
+            <label for="skills">Skills:</label>
+            <textarea id="skills" placeholder="Enter your skills" rows="4" required></textarea>
+        </fieldset>
+
+        <button type="submit"><b>Generate Resume</b></button>
+    </form>
+
+    <br>
+
+    <!-- Dynamic Resume Display Area -->
+     <div id="generatedResume">
+    <div id="Resume-display">
+        <!-- Resume will be generated here -->
+    </div>
+</div>
+
+    <!-- Download Resume Link (initially hidden) -->
+    <a id="download-btn" href="#" style="display:none"  ">Download Resume</a>
+
+
+
+
+functionality
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    // Get references to the form and elements
+    var form = document.getElementById("Resume-form");
+    var nameInput = document.getElementById("name");
+    var emailInput = document.getElementById("email");
+    var phoneInput = document.getElementById("phone");
+    var educationInput = document.getElementById("education");
+    var experienceInput = document.getElementById("experience");
+    var skillsInput = document.getElementById("skills");
+    var profilePictureInput = document.getElementById("profile-picture");
+    var resumeDisplay = document.getElementById("Resume-display");
+    var downloadBtn = document.getElementById("download-btn");
+    // Add event listener for form submission
+    form.addEventListener("submit", function (event) {
+        var _a;
+        event.preventDefault(); // Prevent default form submission
+        // Collect form data
+        var name = nameInput.value;
+        var email = emailInput.value;
+        var phone = phoneInput.value;
+        var education = educationInput.value;
+        var experience = experienceInput.value;
+        var skills = skillsInput.value;
+        var profilePicture = (_a = profilePictureInput.files) === null || _a === void 0 ? void 0 : _a[0];
+        // Generate resume content
+        var resumeHTML = "\n            <h2>".concat(name, "</h2>\n            <p>Email: ").concat(email, "</p>\n            <p>Phone: ").concat(phone, "</p>\n            <h3>Education</h3>\n            <p>").concat(education, "</p>\n            <h3>Experience</h3>\n            <p>").concat(experience, "</p>\n            <h3>Skills</h3>\n            <p>").concat(skills, "</p>\n        ");
+        // Handle profile picture
+        if (profilePicture) {
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                var _a;
+                if ((_a = event.target) === null || _a === void 0 ? void 0 : _a.result) {
+                    resumeHTML = "<img src=\"".concat(event.target.result, "\" alt=\"Profile Picture\" style=\"width: 150px; height: 150px;\">") + resumeHTML;
+                    displayResume(resumeHTML);
+                }
+            };
+            reader.readAsDataURL(profilePicture);
+        }
+        else {
+            displayResume(resumeHTML);
+        }
+        // Function to display the generated resume and enable download
+        function displayResume(resumeContent) {
+            // Set resume content to the display area
+            resumeDisplay.innerHTML = resumeContent;
+            downloadBtn.style.display = "block"; // Show the download button
+        }
+        document
+          .getElementById("download-btn")
+          .addEventListener("click", function () {
+            const resumeElement = document.getElementById("Resume-display");
+            const opt = {
+              margin: 1,
+              filename: "Resume.pdf",
+              image: { type: "jpeg", quality: 0.98 },
+              html2canvas: { scale: 2 },
+              jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+            };
+            html2pdf().from(resumeElement).set(opt).save();
+          });
+    });
+});
+
+    </script>
+
+</body>
+</html>
